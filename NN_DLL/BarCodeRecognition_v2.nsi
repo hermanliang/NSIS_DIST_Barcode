@@ -1,6 +1,71 @@
-; ¸Ó¸}¥»¨Ï¥Î HM VNISEdit ¸}¥»½s¿è¾¹ÂQ¾É²£¥Í
+; è©²è…³æœ¬ä½¿ç”¨ HM VNISEdit è…³æœ¬ç·¨è¼¯å™¨åš®å°ç”¢ç”Ÿ
 
-; ¦w¸Ëµ{§Çªì©l©w¸q±`¶q
+; å®‰è£ç¨‹åºåˆå§‹å®šç¾©å¸¸é‡
+!define StrRep "!insertmacro StrRep"
+!macro StrRep output string old new
+    Push "${string}"
+    Push "${old}"
+    Push "${new}"
+    !ifdef __UNINSTALL__
+        Call un.StrRep
+    !else
+        Call StrRep
+    !endif
+    Pop ${output}
+!macroend 
+!macro Func_StrRep un
+    Function ${un}StrRep
+        Exch $R2 ;new
+        Exch 1
+        Exch $R1 ;old
+        Exch 2
+        Exch $R0 ;string
+        Push $R3
+        Push $R4
+        Push $R5
+        Push $R6
+        Push $R7
+        Push $R8
+        Push $R9
+ 
+        StrCpy $R3 0
+        StrLen $R4 $R1
+        StrLen $R6 $R0
+        StrLen $R9 $R2
+        loop:
+            StrCpy $R5 $R0 $R4 $R3
+            StrCmp $R5 $R1 found
+            StrCmp $R3 $R6 done
+            IntOp $R3 $R3 + 1 ;move offset by 1 to check the next character
+            Goto loop
+        found:
+            StrCpy $R5 $R0 $R3
+            IntOp $R8 $R3 + $R4
+            StrCpy $R7 $R0 "" $R8
+            StrCpy $R0 $R5$R2$R7
+            StrLen $R6 $R0
+            IntOp $R3 $R3 + $R9 ;move offset by length of the replacement string
+            Goto loop
+        done:
+ 
+        Pop $R9
+        Pop $R8
+        Pop $R7
+        Pop $R6
+        Pop $R5
+        Pop $R4
+        Pop $R3
+        Push $R0
+        Push $R1
+        Pop $R0
+        Pop $R1
+        Pop $R0
+        Pop $R2
+        Exch $R1
+    FunctionEnd
+!macroend
+!insertmacro Func_StrRep ""
+;!insertmacro Func_StrRep "un."
 !define PRODUCT_NAME "Kaiwood Oned Barcode"
 !define PRODUCT_VERSION "2.1.0.0"
 !define PRODUCT_PUBLISHER "Kaiwood"
@@ -22,35 +87,35 @@
 
 SetCompressor lzma
 
-; ------ MUI ²{¥N¬É­±©w¸q (1.67 ª©¥»¥H¤W­İ®e) ------
+; ------ MUI ç¾ä»£ç•Œé¢å®šç¾© (1.67 ç‰ˆæœ¬ä»¥ä¸Šå…¼å®¹) ------
 
 !include "MUI.nsh"
 !include "x64.nsh"
 !include "LogicLib.nsh"
 !include "DotNetVer.nsh"
 
-; MUI ¹w©w¸q±`¶q
+; MUI é å®šç¾©å¸¸é‡
 !define MUI_ABORTWARNING
 !define MUI_ICON "${NSISDIR}\Contrib\Graphics\Icons\modern-install.ico"
 !define MUI_UNICON "${NSISDIR}\Contrib\Graphics\Icons\modern-uninstall.ico"
 
 
-; Åwªï­¶­±
+; æ­¡è¿é é¢
 !insertmacro MUI_PAGE_WELCOME
-; ¦w¸Ë¹Lµ{­¶­±
+; å®‰è£éç¨‹é é¢
 !insertmacro MUI_PAGE_INSTFILES
-; ¦w¸Ë§¹¦¨­¶­±
+; å®‰è£å®Œæˆé é¢
 !insertmacro MUI_PAGE_FINISH
 
-; ¦w¸Ë¨ø¸ü¹Lµ{­¶­±
+; å®‰è£å¸è¼‰éç¨‹é é¢
 !insertmacro MUI_UNPAGE_INSTFILES
 
-; ¦w¸Ë¬É­±¥]§tªº»y¨¥³]¸m
+; å®‰è£ç•Œé¢åŒ…å«çš„èªè¨€è¨­ç½®
 !insertmacro MUI_LANGUAGE "English"
 
-; ¦w¸Ë¹wÄÀ©ñ¤å¥ó
+; å®‰è£é é‡‹æ”¾æ–‡ä»¶
 !insertmacro MUI_RESERVEFILE_INSTALLOPTIONS
-; ------ MUI ²{¥N¬É­±©w¸qµ²§ô ------
+; ------ MUI ç¾ä»£ç•Œé¢å®šç¾©çµæŸ ------
 
 Name "${PRODUCT_NAME}"
 OutFile "BarCodeRecognition_v2.1.exe"
@@ -133,7 +198,7 @@ Section -Post
 SectionEnd
 
 /******************************
- *  ¥H¤U¬O¦w¸Ëµ{§Çªº¨ø¸ü³¡¤À  *
+ *  ä»¥ä¸‹æ˜¯å®‰è£ç¨‹åºçš„å¸è¼‰éƒ¨åˆ†  *
  ******************************/
 
 Section Uninstall
@@ -163,10 +228,61 @@ Section Uninstall
   SetAutoClose true
 SectionEnd
 
-#-- ®Ú¾Ú NSIS ¸}¥»½s¿è³W«h¡A©Ò¦³ Function °Ï¬q¥²¶·©ñ¸m¦b Section °Ï¬q¤§«á½s¼g¡A¥HÁ×§K¦w¸Ëµ{§Ç¥X²{¥¼¥i¹wª¾ªº°İÃD¡C--#
+#-- æ ¹æ“š NSIS è…³æœ¬ç·¨è¼¯è¦å‰‡ï¼Œæ‰€æœ‰ Function å€æ®µå¿…é ˆæ”¾ç½®åœ¨ Section å€æ®µä¹‹å¾Œç·¨å¯«ï¼Œä»¥é¿å…å®‰è£ç¨‹åºå‡ºç¾æœªå¯é çŸ¥çš„å•é¡Œã€‚--#
 
-Function un.onInit
-  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Uninatall $(^Name) ?" IDYES +2
+Function .onInit
+ 
+  ReadRegStr $R0 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" \
+  "UninstallString"
+  
+  ReadRegStr $R1 HKLM \
+  "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" \
+  "DisplayVersion"
+  
+  StrCmp $R0 "" done
+  StrCmp $R1 "${PRODUCT_VERSION}" done
+  
+  ${StrRep} $R2 $R0 "uninst.exe" ""
+ 
+  MessageBox MB_OK|MB_ICONEXCLAMATION \
+  "${PRODUCT_NAME} is already installed. $\n$\nClick 'OK' to remove the \
+  previous version" \
+  ;uninst
+  ;Abort
+ 
+;Run the uninstaller
+;uninst:
+  ClearErrors
+  ExecWait "$R0 _?=$R2" ;Do not copy the uninstaller to a temp file
+  ; ExecWait "$R0"
+  ; Abort
+  
+;Recheck again
+  ;ReadRegStr $R0 HKLM \
+  ;"Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" \
+  ;"UninstallString"
+  
+  ;ReadRegStr $R1 HKLM \
+  ;"Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}" \
+  ;"DisplayVersion"
+  ;StrCmp $R0 "" done  
+  ;Abort
+ 
+  IfErrors no_remove_uninstaller done
+    ;You can either use Delete /REBOOTOK in the uninstaller or add some code
+    ;here to remove the uninstaller. Use a registry key to check
+    ;whether the user has chosen to uninstall. If you are using an uninstaller
+    ;components page, make sure all sections are uninstalled.
+  no_remove_uninstaller:
+ 
+ 
+done:
+ 
+FunctionEnd
+
+Function un.onInit  
+  MessageBox MB_ICONQUESTION|MB_YESNO|MB_DEFBUTTON2 "Uninatall $(^Name) ?" IDYES +2  
   Abort
 FunctionEnd
 
