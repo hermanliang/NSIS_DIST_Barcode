@@ -2,7 +2,7 @@
 
 ; 安裝程序初始定義常量
 !define PRODUCT_NAME "Kaiwood Oned Barcode"
-!define PRODUCT_VERSION "2.0.0.0"
+!define PRODUCT_VERSION "2.1.0.0"
 !define PRODUCT_PUBLISHER "Kaiwood"
 !define PRODUCT_WEB_SITE "http://www.kaiwood.com"
 !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
@@ -53,7 +53,7 @@ SetCompressor lzma
 ; ------ MUI 現代界面定義結束 ------
 
 Name "${PRODUCT_NAME}"
-OutFile "BarCodeRecognition_v2.exe"
+OutFile "BarCodeRecognition_v2.1.exe"
 InstallDir "$PROGRAMFILES\Kaiwood\OnedBarcode\v.${PRODUCT_VERSION}"
 ShowInstDetails show
 ShowUnInstDetails show
