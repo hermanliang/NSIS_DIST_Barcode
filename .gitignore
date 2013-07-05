@@ -1,2 +1,4 @@
 _dist
 Prerequisites
+*.exe
+NN_DLL/*.exe
